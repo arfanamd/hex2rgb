@@ -1,6 +1,6 @@
 use std::env;
 
-fn hex2rgb(value: String) -> Result<String, &'static str> {
+fn hex2rgb(value: String) {
     let convert = | ch | {
         match ch {
             '0'|'1'|'2'|'3'|'4' => ch.to_digit(10).unwrap(),
@@ -28,25 +28,26 @@ fn hex2rgb(value: String) -> Result<String, &'static str> {
             b += convert(v_iter.next().unwrap()) * 16;
             b += convert(v_iter.next().unwrap()) * 1;
 
-            return Ok(format!("\x1b[48;2;{};{};{}m    \x1b[0m {:>3} {:>3} {:>3} {}",
-                           r, g, b, r, g, b, value));
+            println!("\x1b[48;2;{};{};{}m    \x1b[0m    {:>3} {:>3} {:>3}    {}",
+                    r, g, b, r, g, b, value);
         } else {
-            return Err("[Fatal]: Wrong input!");
+            println!("[\x1b[31mFatal\x1b[0m]: {} Wrong input!", value);
         }
     } else {
-        return Err("[Fatal]: Wrong input!");
+        println!("[\x1b[31mFatal\x1b[0m]: {} Wrong input!", value);
     }
 }
 fn main() {
     let argv: Vec<String> = env::args().collect();
     let argc: usize = argv.len();
 
-    if argv[0] == "hex2rgb" {
-        let parse = hex2rgb(argv[1].clone()).unwrap_or_else(|err| {
-            println!("{}", err);
-        });
-        println!("{}", parse);
-    } else {
-        println!("Nothing todo!");
-    }
+    if argv[0].contains("hex2rgb") {
+        for arg in 1..argc {
+            hex2rgb(argv[arg].clone());
+        }
+    } else if argv[0].contains("rgb2hex") {
+        if argc == 3 {
+            println!("Nothing todo!");
+        } else {}
+    } else {}
 }

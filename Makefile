@@ -13,4 +13,4 @@ all:
 
 build: all
 	@ echo 'building hex2rgb and rgb2hex'
-	@ ${LINK} ${LINK_FLAGS} ${ADDITIONAL} ${OUTPUT}
+	@ ${LINK} ${LINK_FLAGS} ${OUTPUT} ${ADDITIONAL}

@@ -1,5 +1,19 @@
 use std::env;
 
+fn manhelp() {
+    eprintln!("
+  SYNOPSIS
+    hex2rgb <hex-color-values...>
+    rgb2hex <red> <green> <blue>
+
+  DESCRIPTION
+    Show the preview color from the inputed value(s).
+
+  EXAMPLE
+    $ hex2rgb #ffffff #ababab
+    $ rgb2hex 255 255 255
+    ");
+}
 fn hex2rgb(value: String) {
     let convert = | ch | {
         match ch {
@@ -21,12 +35,12 @@ fn hex2rgb(value: String) {
             let mut g: u32 = 0;
             let mut b: u32 = 0;
 
-            r += convert(v_iter.next().unwrap()) * 16;
-            r += convert(v_iter.next().unwrap()) * 1;
-            g += convert(v_iter.next().unwrap()) * 16;
-            g += convert(v_iter.next().unwrap()) * 1;
-            b += convert(v_iter.next().unwrap()) * 16;
-            b += convert(v_iter.next().unwrap()) * 1;
+            r += convert(v_iter.next().unwrap()) * 0x10;
+            r += convert(v_iter.next().unwrap()) * 0x1;
+            g += convert(v_iter.next().unwrap()) * 0x10;
+            g += convert(v_iter.next().unwrap()) * 0x1;
+            b += convert(v_iter.next().unwrap()) * 0x10;
+            b += convert(v_iter.next().unwrap()) * 0x1;
 
             println!("\x1b[48;2;{};{};{}m    \x1b[0m    {:>3} {:>3} {:>3}    {}",
                     r, g, b, r, g, b, value);
@@ -46,8 +60,12 @@ fn main() {
             hex2rgb(argv[arg].clone());
         }
     } else if argv[0].contains("rgb2hex") {
-        if argc == 3 {
+        if argc == 4 {
             println!("Nothing todo!");
-        } else {}
-    } else {}
+        } else {
+            manhelp();
+        }
+    } else {
+        manhelp();
+    }
 }

@@ -1,16 +1,11 @@
 CC=rustc
-FLAGS=-C prefer-dynamic -o
-ELF_C=termux-elf-cleaner
-OUTPUT=hex2rgb
-INPUT=hex2rgb.rs
-LINK=ln
-LINK_FLAGS=-s
-ADDITIONAL=rgb2hex
+IN=hex2rgb.rs
+LN=command ln
+FLGS=-C prefer-dynamic -o
+OUT1=hex2rgb
+OUT2=rgb2hex
+LN_FLGS=-s
 
 all:
-	@ echo 'Compiling...'
-	@ ${CC} ${FLAGS} ${OUTPUT} ${INPUT} && ${ELF_C} ${OUTPUT}
-
-build: all
-	@ echo 'building hex2rgb and rgb2hex'
-	@ ${LINK} ${LINK_FLAGS} ${OUTPUT} ${ADDITIONAL}
+	@ echo 'Compile in dynamic & create the soft link...'
+	@ ${CC} ${FLGS} ${OUT1} ${IN} && ${LN} ${LN_FLGS} ${OUT1} ${OUT2}

@@ -1,9 +1,9 @@
 /* This project is released under
  *
- * THE BEER-WARE LICENSE (Revision 42):
+ * "THE BEER-WARE LICENSE" (Revision 42):
  *
  * As long as you retain this notice you can do whatever you want
- * with this stuff.  If we meet someday, and you think this stuff
+ * with this stuff. If we meet some day, and you think this stuff
  * is worth it, you can buy us a beer in return.
  *
  * This project is distributed in the hope that it will be useful,
@@ -26,14 +26,16 @@ fn print_help() {
 
   EXAMPLES
     /* convert multi hex value to rgb. */
-    $ hex2rgb \"#ffffff\" abcabc
-    \x1b[48;2;255;255;255m        \x1b[0m    255 255 255    #ffffff
-    \x1b[48;2;171;202;188m        \x1b[0m    171 202 188    #ababab
+    $ hex2rgb \"#ffffff\" abcabc"
+	);
+	eprint!("    "); print_result(&255u32,&255u32,&255u32);
+	eprint!("    "); print_result(&171u32,&202u32,&188u32);
 
+	eprintln!("
     /* convert rgb to hex color. */
-    $ rgb2hex 255 255 255
-    \x1b[48;2;255;255;255m        \x1b[0m    255 255 255    #ffffff
-");
+    $ rgb2hex 255 255 255"
+	);
+	eprint!("    "); print_result(&255u32,&255u32,&255u32);
 }
 fn exerr(msg: &str) {
 	eprintln!("error: {}", msg);
@@ -41,8 +43,8 @@ fn exerr(msg: &str) {
 }
 
 fn print_result(r: &u32, g: &u32, b: &u32) {
-	println!("\x1B[48;2;{};{};{}m        \x1B[0m  \
-					 {:>3} {:>3} {:>3}  #{:0>2x}{:0>2x}{:0>2x}",
+	println!("\x1B[48;2;{};{};{}m        \x1B[0m   \
+					 {:>3} {:>3} {:>3}   #{:0>2x}{:0>2x}{:0>2x}",
 					 r, g, b, r, g, b, r, g, b);
 }
 fn rgb2hex(r: String, g: String, b: String) {

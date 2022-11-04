@@ -14,51 +14,52 @@ use std::{
 	env,      /* for args.collect() */
 	process,  /* for exit() */
 };
-fn manhelp() {
+const CANCEL_OPERATION: i32 = 125;  /* exit code */
+
+fn print_help() {
 	eprintln!("
-	SYNOPSIS
-		hex2rgb <hex-color-values...>
-		rgb2hex <red> <green> <blue>
+  Convert hex to rgb or vise versa.
 
-	DESCRIPTION
-		Color preview based on the value(s) entered.
+  SYNOPSIS
+    hex2rgb <color-hex-value ...>
+    rgb2hex <red> <green> <blue>
 
-	EXAMPLE
-		$ hex2rgb \"#ffffff\" abcabc
-		\x1b[48;2;255;255;255m        \x1b[0m    255 255 255    #ffffff
-		\x1b[48;2;171;202;188m        \x1b[0m    171 202 188    #ababab
+  EXAMPLES
+    /* convert multi hex value to rgb. */
+    $ hex2rgb \"#ffffff\" abcabc
+    \x1b[48;2;255;255;255m        \x1b[0m    255 255 255    #ffffff
+    \x1b[48;2;171;202;188m        \x1b[0m    171 202 188    #ababab
 
-		$ rgb2hex 255 255 255
-		\x1b[48;2;255;255;255m        \x1b[0m    255 255 255    #ffffff
-		");
-	process::exit(0);
+    /* convert rgb to hex color. */
+    $ rgb2hex 255 255 255
+    \x1b[48;2;255;255;255m        \x1b[0m    255 255 255    #ffffff
+");
+}
+fn exerr(msg: &str) {
+	eprintln!("error: {}", msg);
+	process::exit(CANCEL_OPERATION);
 }
 
 fn rgb2hex(v1: String, v2: String, v3: String) {
 	// Thanks to this thread:
 	// stackoverflow.com/questions/27043268/convert-a-string-to-int
 	let r = v1.parse::<u32>().unwrap_or_else(|_e| {
-		eprintln!("[\x1b[31mFatal\x1b[0m]: {} Wrong input!", v1);
-		process::exit(1);
+		exerr(&format!("{} Wrong input!", v1));
 	});
 	let g = v2.parse::<u32>().unwrap_or_else(|_e| {
-		eprintln!("[\x1b[31mFatal\x1b[0m]: {} Wrong input!", v2);
-		process::exit(1);
+		exerr(&format!("{} Wrong input!", v2));
 	});
 	let b = v3.parse::<u32>().unwrap_or_else(|_e| {
-		eprintln!("[\x1b[31mFatal\x1b[0m]: {} Wrong input!", v3);
-		process::exit(1);
+		exerr(&format!("{} Wrong input!", v3));
 	});
 
 	if r <= 0xff && g <= 0xff && b <= 0xff {
 		println!("\x1b[48;2;{};{};{}m        \x1b[0m    \
 								 {:>3} {:>3} {:>3}    #{:0>2x}{:0>2x}{:0>2x}",
 								 r, g, b, r, g, b, r, g, b);
-		} else {
-				eprintln!("[\x1b[31mFatal\x1b[0m]: \
-									The value must be less than 256!");
-				process::exit(1);
-		}
+	} else {
+		exerr("The value must be less than 256!");
+	}
 }
 
 fn hex2rgb(value: String) {
@@ -95,32 +96,32 @@ fn hex2rgb(value: String) {
 
 			println!("\x1b[48;2;{};{};{}m        \x1b[0m    \
 										 {:>3} {:>3} {:>3}    {}",
-										r, g, b, r, g, b, value);
-				} else {
-						eprintln!("[\x1b[31mFatal\x1b[0m]: {} Wrong input!", value);
-				}
-		// if the value not starts with the pawn sign '#'
-		} else if value.len() == 0x6 {
-				// string iteration.
-				let mut v_iter = value.chars();
-				let mut r: u32 = 0x0;
-				let mut g: u32 = 0x0;
-				let mut b: u32 = 0x0;
-
-				// 16^0 && 16^1
-				r += convert(v_iter.next().unwrap()) * 0x10;
-				r += convert(v_iter.next().unwrap()) * 0x1;
-				g += convert(v_iter.next().unwrap()) * 0x10;
-				g += convert(v_iter.next().unwrap()) * 0x1;
-				b += convert(v_iter.next().unwrap()) * 0x10;
-				b += convert(v_iter.next().unwrap()) * 0x1;
-
-				println!("\x1b[48;2;{};{};{}m        \x1b[0m    \
-								 {:>3} {:>3} {:>3}    #{}",
-								r, g, b, r, g, b, value);
+										 r, g, b, r, g, b, value);
 		} else {
-				eprintln!("[\x1b[31mFatal\x1b[0m]: {} Wrong input!", value);
+			exerr(&format!("{} Wrong input!", value));
 		}
+		// if the value not starts with the pawn sign '#'
+	} else if value.len() == 0x6 {
+		// string iteration.
+		let mut v_iter = value.chars();
+		let mut r: u32 = 0x0;
+		let mut g: u32 = 0x0;
+		let mut b: u32 = 0x0;
+
+		// 16^0 && 16^1
+		r += convert(v_iter.next().unwrap()) * 0x10;
+		r += convert(v_iter.next().unwrap()) * 0x1;
+		g += convert(v_iter.next().unwrap()) * 0x10;
+		g += convert(v_iter.next().unwrap()) * 0x1;
+		b += convert(v_iter.next().unwrap()) * 0x10;
+		b += convert(v_iter.next().unwrap()) * 0x1;
+
+		println!("\x1b[48;2;{};{};{}m        \x1b[0m    \
+								 {:>3} {:>3} {:>3}    #{}",
+								 r, g, b, r, g, b, value);
+	} else {
+		exerr(&format!("{} Wrong input!", value));
+	}
 }
 
 fn main() {
@@ -136,13 +137,13 @@ fn main() {
 			if argc == 0x4 {
 				rgb2hex(argv[1].clone(), argv[2].clone(), argv[3].clone());
 			} else {
-				manhelp();
+				print_help();
 			}
 		} else {
-			manhelp();
+			print_help();
 		}
 	} else {
-		manhelp();
+		print_help();
 	}
 }
 // vim:ts=2:sw=2:noexpandtab:cindent

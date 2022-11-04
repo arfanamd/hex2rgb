@@ -10,6 +10,10 @@
  * but WITHOUT ANY WARRANTY;  without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
+use std::{
+    env,      /* for args.collect() */
+    process,  /* for exit() */
+};
 fn manhelp() {
     eprintln!("
   SYNOPSIS
@@ -27,7 +31,7 @@ fn manhelp() {
     $ rgb2hex 255 255 255
     \x1b[48;2;255;255;255m        \x1b[0m    255 255 255    #ffffff
     ");
-    std::process::exit(0);
+    process::exit(0);
 }
 
 fn rgb2hex(v1: String, v2: String, v3: String) {
@@ -35,15 +39,15 @@ fn rgb2hex(v1: String, v2: String, v3: String) {
     // stackoverflow.com/questions/27043268/convert-a-string-to-int
     let r = v1.parse::<u32>().unwrap_or_else(|_e| {
         eprintln!("[\x1b[31mFatal\x1b[0m]: {} Wrong input!", v1);
-        std::process::exit(1);
+        process::exit(1);
     });
     let g = v2.parse::<u32>().unwrap_or_else(|_e| {
         eprintln!("[\x1b[31mFatal\x1b[0m]: {} Wrong input!", v2);
-        std::process::exit(1);
+        process::exit(1);
     });
     let b = v3.parse::<u32>().unwrap_or_else(|_e| {
         eprintln!("[\x1b[31mFatal\x1b[0m]: {} Wrong input!", v3);
-        std::process::exit(1);
+        process::exit(1);
     });
 
     if r <= 0xff && g <= 0xff && b <= 0xff {
@@ -53,7 +57,7 @@ fn rgb2hex(v1: String, v2: String, v3: String) {
     } else {
         eprintln!("[\x1b[31mFatal\x1b[0m]: \
                   The value must be less than 256!");
-        std::process::exit(1);
+        process::exit(1);
     }
 }
 
@@ -120,7 +124,7 @@ fn hex2rgb(value: String) {
 }
 
 fn main() {
-    let argv: Vec<String> = std::env::args().collect();
+    let argv: Vec<String> = env::args().collect();
     let argc: usize = argv.len();
 
     if argc != 0x1 {
